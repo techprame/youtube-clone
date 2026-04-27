@@ -1,0 +1,39 @@
+{
+    "name": "youtube-clone",
+    "version": "1.0.0",
+    "description": "building and learning by coding with chaicode udemy course. I am sure I will learn a lot by writing code on the go. So, this is my first attempt.",
+    "main": "src/index.js",
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node src/index.js",
+        "dev": "nodemon src/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/techprame/youtube-clone.git"
+    },
+    "keywords": [
+        "youtube",
+        "clone",
+        "video",
+        "nodejs",
+        "mongoose",
+        "express",
+        "backend"
+    ],
+    "author": "Pramendra Singh",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/techprame/youtube-clone/issues"
+    },
+    "homepage": "https://github.com/techprame/youtube-clone#readme",
+    "devDependencies": {
+        "nodemon": "^3.1.14",
+        "prettier": "^3.8.3"
+    },
+    "dependencies": {
+        "express": "^5.2.1",
+        "mongoose": "^9.5.0"
+    }
+}
