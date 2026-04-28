@@ -1,11 +1,15 @@
-console.log("Hello World, I'm PS.");
+import { app } from "./app.js";
+import "dotenv/config.js";
+import connectDB from "./db/index.js";
 
-/*
+const PORT = process.env.PORT;
 
-Date - 28th Apr, 2026
-
-Abhi tak 162. Backend project structure complete kar liya hai.
-
-GitHub par push kar diya hai.
-
-*/
+connectDB()
+    .then(
+        app.listen(PORT, (req, res) => {
+            console.log(`The server is running at http://localhost:${PORT}`);
+        })
+    )
+    .catch((error) => {
+        console.log(`MongoDB Connection error, ${error}`);
+    });
