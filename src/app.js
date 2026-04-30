@@ -30,7 +30,9 @@ app.use(cookieParser()); // So that browser can use cookies. Express doesn't hav
 // app.get("/healthcheck", (req, res) => {
 //     res.status(200).send("Everything is all right.");
 // });
-
+app.get("/", (req, res) => {
+    res.send("Welcome to your API 🚀");
+});
 app.use("/api/v1/healthcheck", healthcheckRouter);
 app.use("/api/v1/users", userRouter);
 
