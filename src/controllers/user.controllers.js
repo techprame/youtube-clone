@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import "dotenv/config.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 import { User } from "../models/user.models.js";
 import {
@@ -12,12 +13,18 @@ import {
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
-        const user = User.findById(userId);
+        const user = await User.findById(userId);
         if (!user) {
             throw new ApiError(404, "User not found.");
         }
+
+        // console.log(user);
+
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
+
+        // console.log(accessToken);
+        // console.log(refreshToken);
 
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false });
@@ -134,17 +141,21 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const isPasswordValid = await user.isPasswordCorrect(password);
 
+    // console.log(isPasswordValid);
+
     if (!isPasswordValid) {
         throw new ApiError(401, "Password is not correct.");
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-        user._id
+        user?._id
     );
 
     const loggedInUser = await User.findById(user._id).select(
         "-password -refreshToken"
     );
+
+    // console.log(loggedInUser);
 
     if (!loggedInUser) {
         throw new ApiError(
@@ -161,7 +172,7 @@ const loginUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .cookie("accessToken", accessToken, options)
-        .cookie("RefreshToken", refreshToken, options)
+        .cookie("refreshToken", refreshToken, options)
         .json(
             new ApiResponse(
                 200,
@@ -196,6 +207,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken =
         req.cookies.refreshToken || req.body.refreshToken;
+
+    console.log(incomingRefreshToken);
 
     if (!incomingRefreshToken) {
         throw new ApiError(401, "Refresh token is required.");
@@ -287,7 +300,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Fullname and email are required.");
     }
 
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
@@ -301,7 +314,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     ).select("-password -refreshToken");
 
     res.status(200).json(
-        new ApiResponse(200, user, "User Account details successfully.")
+        new ApiResponse(200, user, "User Account details updated successfully.")
     );
 });
 const updateUserAvatar = asyncHandler(async (req, res) => {
@@ -335,7 +348,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please provide the cover image.");
     }
 
-    const coverImage = uploadOnCloudinary(coverImageLocalPath);
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
     if (!coverImage.url) {
         throw new ApiError(
